@@ -21,3 +21,13 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# FontAwesome Pro (don't commit licensed files)
+fontawesome-pro-*
+
+# Environment variables
+.env
+
+# IDE files
+.vscode/
+.idea/
