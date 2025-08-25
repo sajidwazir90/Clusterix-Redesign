@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import SidebarItem from "./SidebarItem";
+import CustomizationSidebarItem from "./CustomizationSidebarItem";
 
 // Import solid icons
 import homeIcon from "../../assets/icons/home-icon.svg";
@@ -14,6 +15,7 @@ import fileLinesIcon from "../../assets/icons/file-lines-icon.svg";
 import walletIcon from "../../assets/icons/wallet-icon.svg";
 import emailIcon from "../../assets/icons/email-icon.svg";
 import userGroupIcon from "../../assets/icons/user-group-icon.svg";
+import grid2PlusIcon from "../../assets/icons/grid-2-plus-icon.svg";
 
 // Import regular icons
 import homeIconRegular from "../../assets/icons/home-icon-regular.svg";
@@ -27,6 +29,7 @@ import fileLinesIconRegular from "../../assets/icons/file-lines-icon-regular.svg
 import walletIconRegular from "../../assets/icons/wallet-icon-regular.svg";
 import emailIconRegular from "../../assets/icons/email-icon-regular.svg";
 import userGroupIconRegular from "../../assets/icons/user-group-icon-regular.svg";
+import grid2PlusIconRegular from "../../assets/icons/grid-2-plus-icon-regular.svg";
 
 const SidebarContainer = styled.div`
   display: flex;
@@ -140,8 +143,21 @@ const menuItems = [
   },
 ];
 
-const Sidebar = ({ activeSidebarItem = "home" }) => {
+const Sidebar = ({ activeSidebarItem = "home", onItemClick }) => {
   const [activeItem, setActiveItem] = useState(activeSidebarItem);
+  const [pinnedItems, setPinnedItems] = useState({
+    home: true,
+    hr: true,
+    "project-management": true,
+    "task-management": true,
+    chats: true,
+    "time-tracking": true,
+    files: true,
+    office: true,
+    subsidies: true,
+    emails: true,
+    customers: true,
+  });
 
   // Update local state when prop changes
   React.useEffect(() => {
@@ -150,12 +166,25 @@ const Sidebar = ({ activeSidebarItem = "home" }) => {
 
   const handleItemClick = (itemId) => {
     setActiveItem(itemId);
+    if (onItemClick) {
+      onItemClick(itemId);
+    }
   };
+
+  const handlePinToggle = (itemId) => {
+    setPinnedItems((prev) => ({
+      ...prev,
+      [itemId]: !prev[itemId],
+    }));
+  };
+
+  // Filter items based on pinned status for display
+  const visibleItems = menuItems.filter((item) => pinnedItems[item.id]);
 
   return (
     <SidebarContainer>
       <Navigation>
-        {menuItems.map((item) => (
+        {visibleItems.map((item) => (
           <SidebarItem
             key={item.id}
             id={item.id}
@@ -168,6 +197,21 @@ const Sidebar = ({ activeSidebarItem = "home" }) => {
             iconHeight={item.iconHeight}
           />
         ))}
+
+        {/* Customization Item */}
+        <CustomizationSidebarItem
+          id="customization"
+          label="Customization"
+          icon={grid2PlusIcon}
+          iconRegular={grid2PlusIconRegular}
+          isActive={activeItem === "customization"}
+          onClick={() => handleItemClick("customization")}
+          iconWidth="18px"
+          iconHeight="18px"
+          menuItems={menuItems}
+          onPinToggle={handlePinToggle}
+          pinnedItems={pinnedItems}
+        />
       </Navigation>
     </SidebarContainer>
   );

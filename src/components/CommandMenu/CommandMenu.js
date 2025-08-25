@@ -39,6 +39,7 @@ const Overlay = styled.div`
 
 const CommandMenuContainer = styled.div`
   width: 640px;
+  max-height: 80vh;
   background-color: #ffffff;
   border: 1px solid #e7e7e7;
   border-radius: 12px;
@@ -46,6 +47,8 @@ const CommandMenuContainer = styled.div`
     0px 8px 8px -4px rgba(10, 13, 18, 0.13),
     0px -4px 24px -4px rgba(10, 13, 18, 0.08);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   animation: ${(props) => (props.isOpen ? "fadeInUp" : "fadeOutDown")} 0.3s
     ease-out;
 
@@ -69,6 +72,31 @@ const CommandMenuContainer = styled.div`
       opacity: 0;
       transform: translateY(-20px);
     }
+  }
+`;
+
+const ScrollableContent = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(80vh - 120px); /* Subtract header and footer space */
+  
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
   }
 `;
 
@@ -508,64 +536,154 @@ const CommandMenu = ({ isOpen, onClose, onSidebarItemSelect }) => {
           </ShortcutBadge>
         </SearchInput>
 
-        {!searchQuery.trim() && (
-          <>
-            <CategoryBadges>
-              <CategoryBadge>
-                <CategoryIcon>
-                  <InlineSvgIcon
-                    src={circleCheck}
-                    width="12px"
-                    height="12px"
-                    color="#667085"
-                  />
-                </CategoryIcon>
-                <CategoryText>Tasks</CategoryText>
-              </CategoryBadge>
-              <CategoryBadge>
-                <CategoryIcon>
-                  <InlineSvgIcon
-                    src={fileIcon}
-                    width="12px"
-                    height="12px"
-                    color="#667085"
-                  />
-                </CategoryIcon>
-                <CategoryText>Docs</CategoryText>
-              </CategoryBadge>
-              <CategoryBadge>
-                <CategoryIcon>
-                  <InlineSvgIcon
-                    src={hashTag}
-                    width="12px"
-                    height="12px"
-                    color="#667085"
-                  />
-                </CategoryIcon>
-                <CategoryText>Channels</CategoryText>
-              </CategoryBadge>
-              <CategoryBadge>
-                <CategoryIcon>
-                  <InlineSvgIcon
-                    src={messagesIcon}
-                    width="12px"
-                    height="12px"
-                    color="#667085"
-                  />
-                </CategoryIcon>
-                <CategoryText>Messages</CategoryText>
-              </CategoryBadge>
-            </CategoryBadges>
+        <ScrollableContent>
+          {!searchQuery.trim() && (
+            <>
+              <CategoryBadges>
+                <CategoryBadge>
+                  <CategoryIcon>
+                    <InlineSvgIcon
+                      src={circleCheck}
+                      width="12px"
+                      height="12px"
+                      color="#667085"
+                    />
+                  </CategoryIcon>
+                  <CategoryText>Tasks</CategoryText>
+                </CategoryBadge>
+                <CategoryBadge>
+                  <CategoryIcon>
+                    <InlineSvgIcon
+                      src={fileIcon}
+                      width="12px"
+                      height="12px"
+                      color="#667085"
+                    />
+                  </CategoryIcon>
+                  <CategoryText>Docs</CategoryText>
+                </CategoryBadge>
+                <CategoryBadge>
+                  <CategoryIcon>
+                    <InlineSvgIcon
+                      src={hashTag}
+                      width="12px"
+                      height="12px"
+                      color="#667085"
+                    />
+                  </CategoryIcon>
+                  <CategoryText>Channels</CategoryText>
+                </CategoryBadge>
+                <CategoryBadge>
+                  <CategoryIcon>
+                    <InlineSvgIcon
+                      src={messagesIcon}
+                      width="12px"
+                      height="12px"
+                      color="#667085"
+                    />
+                  </CategoryIcon>
+                  <CategoryText>Messages</CategoryText>
+                </CategoryBadge>
+              </CategoryBadges>
 
+              <MenuSection>
+                <SectionHeader>
+                  <SectionTitle>Recent</SectionTitle>
+                </SectionHeader>
+                <MenuItems>
+                  {menuItems.recent.map((item, index) => (
+                    <MenuItem
+                      key={item.id}
+                      isHighlighted={false}
+                      onClick={() => handleItemSelect(item)}
+                    >
+                      <MenuItemIcon>
+                        <InlineSvgIcon
+                          src={item.icon}
+                          width="16px"
+                          height="16px"
+                          color="#a4a7ae"
+                        />
+                      </MenuItemIcon>
+                      <MenuItemContent>
+                        <MenuItemText>{item.title}</MenuItemText>
+                      </MenuItemContent>
+                      {item.shortcut && (
+                        <MenuItemShortcut>
+                          <ShortcutBadge>
+                            <ShortcutText>{item.shortcut}</ShortcutText>
+                          </ShortcutBadge>
+                        </MenuItemShortcut>
+                      )}
+                    </MenuItem>
+                  ))}
+                </MenuItems>
+              </MenuSection>
+
+              <MenuSection>
+                <SectionHeader>
+                  <SectionTitle>Commands</SectionTitle>
+                </SectionHeader>
+                <MenuItems>
+                  {menuItems.commands.map((item, index) => (
+                    <MenuItem
+                      key={item.id}
+                      isHighlighted={false}
+                      onClick={() => handleItemSelect(item)}
+                    >
+                      <MenuItemIcon>
+                        <InlineSvgIcon
+                          src={item.icon}
+                          width="16px"
+                          height="16px"
+                          color="#a4a7ae"
+                        />
+                      </MenuItemIcon>
+                      <MenuItemContent>
+                        <MenuItemText>{item.title}</MenuItemText>
+                      </MenuItemContent>
+                      {item.shortcut && (
+                        <MenuItemShortcut>
+                          {Array.isArray(item.shortcut) ? (
+                            item.shortcut.map((key, idx) => (
+                              <React.Fragment key={idx}>
+                                <ShortcutBadge>
+                                  <ShortcutText>{key}</ShortcutText>
+                                </ShortcutBadge>
+                                {idx < item.shortcut.length - 1 && (
+                                  <InlineSvgIcon
+                                    src={arrowDownIcon}
+                                    width="16px"
+                                    height="16px"
+                                    color="#a4a7ae"
+                                  />
+                                )}
+                              </React.Fragment>
+                            ))
+                          ) : (
+                            <ShortcutBadge>
+                              <ShortcutText>{item.shortcut}</ShortcutText>
+                            </ShortcutBadge>
+                          )}
+                        </MenuItemShortcut>
+                      )}
+                    </MenuItem>
+                  ))}
+                </MenuItems>
+              </MenuSection>
+            </>
+          )}
+
+          {searchQuery.trim() && filteredItems.length > 0 && (
             <MenuSection>
               <SectionHeader>
-                <SectionTitle>Recent</SectionTitle>
+                <SectionTitle>Search Results</SectionTitle>
               </SectionHeader>
               <MenuItems>
-                {menuItems.recent.map((item, index) => (
+                {filteredItems.map((item, index) => (
                   <MenuItem
                     key={item.id}
-                    isHighlighted={false}
+                    isHighlighted={index === highlightedIndex}
                     onClick={() => handleItemSelect(item)}
                   >
                     <MenuItemIcon>
@@ -590,104 +708,16 @@ const CommandMenu = ({ isOpen, onClose, onSidebarItemSelect }) => {
                 ))}
               </MenuItems>
             </MenuSection>
+          )}
 
+          {searchQuery.trim() && filteredItems.length === 0 && (
             <MenuSection>
               <SectionHeader>
-                <SectionTitle>Commands</SectionTitle>
+                <SectionTitle>No results found</SectionTitle>
               </SectionHeader>
-              <MenuItems>
-                {menuItems.commands.map((item, index) => (
-                  <MenuItem
-                    key={item.id}
-                    isHighlighted={false}
-                    onClick={() => handleItemSelect(item)}
-                  >
-                    <MenuItemIcon>
-                      <InlineSvgIcon
-                        src={item.icon}
-                        width="16px"
-                        height="16px"
-                        color="#a4a7ae"
-                      />
-                    </MenuItemIcon>
-                    <MenuItemContent>
-                      <MenuItemText>{item.title}</MenuItemText>
-                    </MenuItemContent>
-                    {item.shortcut && (
-                      <MenuItemShortcut>
-                        {Array.isArray(item.shortcut) ? (
-                          item.shortcut.map((key, idx) => (
-                            <React.Fragment key={idx}>
-                              <ShortcutBadge>
-                                <ShortcutText>{key}</ShortcutText>
-                              </ShortcutBadge>
-                              {idx < item.shortcut.length - 1 && (
-                                <InlineSvgIcon
-                                  src={arrowDownIcon}
-                                  width="16px"
-                                  height="16px"
-                                  color="#a4a7ae"
-                                />
-                              )}
-                            </React.Fragment>
-                          ))
-                        ) : (
-                          <ShortcutBadge>
-                            <ShortcutText>{item.shortcut}</ShortcutText>
-                          </ShortcutBadge>
-                        )}
-                      </MenuItemShortcut>
-                    )}
-                  </MenuItem>
-                ))}
-              </MenuItems>
             </MenuSection>
-          </>
-        )}
-
-        {searchQuery.trim() && filteredItems.length > 0 && (
-          <MenuSection>
-            <SectionHeader>
-              <SectionTitle>Search Results</SectionTitle>
-            </SectionHeader>
-            <MenuItems>
-              {filteredItems.map((item, index) => (
-                <MenuItem
-                  key={item.id}
-                  isHighlighted={index === highlightedIndex}
-                  onClick={() => handleItemSelect(item)}
-                >
-                  <MenuItemIcon>
-                    <InlineSvgIcon
-                      src={item.icon}
-                      width="16px"
-                      height="16px"
-                      color="#a4a7ae"
-                    />
-                  </MenuItemIcon>
-                  <MenuItemContent>
-                    <MenuItemText>{item.title}</MenuItemText>
-                  </MenuItemContent>
-                  {item.shortcut && (
-                    <MenuItemShortcut>
-                      <ShortcutBadge>
-                        <ShortcutText>{item.shortcut}</ShortcutText>
-                      </ShortcutBadge>
-                    </MenuItemShortcut>
-                  )}
-                </MenuItem>
-              ))}
-            </MenuItems>
-          </MenuSection>
-        )}
-
-        {searchQuery.trim() && filteredItems.length === 0 && (
-          <MenuSection>
-            <SectionHeader>
-              <SectionTitle>No results found</SectionTitle>
-            </SectionHeader>
-          </MenuSection>
-        )}
+          )}
+        </ScrollableContent>
 
         <Footer>
           <FooterSection>

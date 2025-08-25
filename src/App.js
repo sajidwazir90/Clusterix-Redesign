@@ -149,6 +149,26 @@ function App() {
     console.log("Selected sidebar item:", itemId);
   };
 
+  // Get dashboard title based on active sidebar item
+  const getDashboardTitle = (itemId) => {
+    const dashboardTitles = {
+      home: "Home Dashboard",
+      hr: "HR Dashboard",
+      "project-management": "Project Management Dashboard",
+      "task-management": "Task Management Dashboard",
+      chats: "Chats Dashboard",
+      "time-tracking": "Time Tracking Dashboard",
+      files: "Files Dashboard",
+      office: "Office Dashboard",
+      subsidies: "Subsidies Dashboard",
+      emails: "Emails Dashboard",
+      customers: "Customers Dashboard",
+      customization: "Customization Settings",
+    };
+
+    return dashboardTitles[itemId] || "Dashboard";
+  };
+
   // Handle keyboard shortcuts for command menu
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -181,11 +201,14 @@ function App() {
         />
       </TopBarWrapper>
       <Wrapper>
-        <Sidebar activeSidebarItem={activeSidebarItem} />
+        <Sidebar
+          activeSidebarItem={activeSidebarItem}
+          onItemClick={handleSidebarItemSelect}
+        />
         <RightSection trackTimeOpen={isTrackTimeOpen}>
           <MainContent>
             <PlaceholderText>
-              Main Content Area - Dashboard widgets will go here
+              {getDashboardTitle(activeSidebarItem)}
             </PlaceholderText>
           </MainContent>
           <TrackTime
